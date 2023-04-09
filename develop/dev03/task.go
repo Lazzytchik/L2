@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	dev03 "lazzytchik/l2/develop/dev03/types"
 	"log"
 	"os"
@@ -15,6 +16,7 @@ func Sort(from string, outputFile string) (string, error) {
 	//	Init sort options
 	options := dev03.SortOptions{}
 	options.Init()
+	flag.Parse()
 
 	//	Get data from file
 	_, err := getDataFromFile(from)
