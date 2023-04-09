@@ -9,7 +9,9 @@ import (
 	"os"
 )
 
-func Sort(from string, outputFile string) (string, error) {
+func main() {
+	from := "data.txt"
+
 	//	Init logger
 	errLogger := log.New(os.Stderr, "sort: ", log.Ldate)
 
@@ -27,7 +29,6 @@ func Sort(from string, outputFile string) (string, error) {
 	//	Sort extracted data
 
 	//	Write it to the new file
-	return outputFile, nil
 }
 
 func getDataFromFile(filename string) ([]string, error) {
