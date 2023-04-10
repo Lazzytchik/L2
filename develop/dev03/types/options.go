@@ -1,25 +1,64 @@
 package dev03
 
-import "flag"
+import (
+	"flag"
+	"fmt"
+	"strings"
+)
 
 type SortOptions struct {
-	Column         *int
-	Numeric        *bool
-	Reverse        *bool
-	OmitDuplicates *bool
-	Month          *bool
-	Trim           *bool
-	CheckSorted    *bool
-	SuffixNumeric  *bool
+	Column         int
+	Numeric        bool
+	Reverse        bool
+	OmitDuplicates bool
+	Month          bool
+	Trim           bool
+	CheckSorted    bool
+	SuffixNumeric  bool
 }
 
-func (o SortOptions) Init() {
-	o.Column = flag.Int("k", 1, "number of word to sort by")
-	o.Numeric = flag.Bool("n", false, "numeric sort")
-	o.Reverse = flag.Bool("r", false, "reverse sort")
-	o.OmitDuplicates = flag.Bool("u", false, "omit duplicates")
-	o.Month = flag.Bool("M", false, "month sort")
-	o.Trim = flag.Bool("b", false, "trim left spaces")
-	o.CheckSorted = flag.Bool("c", false, "check if sorted")
-	o.SuffixNumeric = flag.Bool("h", false, "suffixes supported numeric sort")
+func (o *SortOptions) Parse() {
+	flag.Parse()
+}
+
+func (o *SortOptions) IsIncompatible() bool {
+	return (o.Month && o.SuffixNumeric) || (o.Numeric && o.SuffixNumeric) || (o.Month && o.Numeric)
+}
+
+func (o *SortOptions) String() string {
+	var result strings.Builder
+
+	if o.Column > 1 {
+		result.WriteString(fmt.Sprintf("-k %d ", o.Column))
+	}
+
+	if o.Numeric {
+		result.WriteString("-n ")
+	}
+
+	if o.Trim {
+		result.WriteString("-b ")
+	}
+
+	if o.Month {
+		result.WriteString("-M ")
+	}
+
+	if o.CheckSorted {
+		result.WriteString("-c ")
+	}
+
+	if o.SuffixNumeric {
+		result.WriteString("-h ")
+	}
+
+	if o.Reverse {
+		result.WriteString("-r ")
+	}
+
+	if o.OmitDuplicates {
+		result.WriteString("-u ")
+	}
+
+	return result.String()
 }

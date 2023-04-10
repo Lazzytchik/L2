@@ -16,19 +16,35 @@ func main() {
 	errLogger := log.New(os.Stderr, "sort: ", log.Ldate)
 
 	//	Init sort options
-	options := dev03.SortOptions{}
-	options.Init()
-	flag.Parse()
+	options := ParseFlagOptions()
+	if options.IsIncompatible() {
+		errLogger.Printf("options \"%s\" incompatible", options.String())
+		return
+	}
 
 	//	Get data from file
-	_, err := getDataFromFile(from)
+	raw, err := getDataFromFile(from)
 	if err != nil {
 		errLogger.Fatalf(err.Error())
 	}
+	for _, s := range raw {
+		log.Println(s)
+	}
 
 	//	Sort extracted data
+	sorter := dev03.StraightSorter{
+		Options:   options,
+		ErrLogger: errLogger,
+	}
+	sorter.InitComparer()
+
+	sorted, _ := sorter.Sort(raw)
 
 	//	Write it to the new file
+	log.Println("____SORTED____")
+	for _, s := range sorted {
+		log.Println(s)
+	}
 }
 
 func getDataFromFile(filename string) ([]string, error) {
@@ -47,4 +63,30 @@ func getDataFromFile(filename string) ([]string, error) {
 	}
 
 	return lines, nil
+}
+
+func ParseFlagOptions() dev03.SortOptions {
+	column := flag.Int("k", 1, "number of word to sort by")
+	numeric := flag.Bool("n", false, "numeric sort")
+	reverse := flag.Bool("r", false, "reverse sort")
+	omitDuplicates := flag.Bool("u", false, "omit duplicates")
+	month := flag.Bool("M", false, "month sort")
+	trim := flag.Bool("b", false, "trim left spaces")
+	checkSorted := flag.Bool("c", false, "check if sorted")
+	suffixNumeric := flag.Bool("h", false, "suffixes supported numeric sort")
+
+	flag.Parse()
+
+	options := dev03.SortOptions{
+		Column:         *column,
+		Numeric:        *numeric,
+		Reverse:        *reverse,
+		OmitDuplicates: *omitDuplicates,
+		Month:          *month,
+		Trim:           *trim,
+		CheckSorted:    *checkSorted,
+		SuffixNumeric:  *suffixNumeric,
+	}
+
+	return options
 }
