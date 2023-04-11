@@ -1,8 +1,10 @@
-package main
+package file
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestGetDataFromFile(t *testing.T) {
+func TestLines(t *testing.T) {
 	want := []string{
 		"man",
 		"89",
@@ -14,7 +16,7 @@ func TestGetDataFromFile(t *testing.T) {
 		"l2 is fine",
 		"36 0 28",
 	}
-	have, err := getDataFromFile("data.txt")
+	have, err := Lines("data.txt")
 
 	if err != nil {
 		t.Fatalf("function with error: %s", err)

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"flag"
+	file "lazzytchik/l2/common/files"
 	dev03 "lazzytchik/l2/develop/dev03/types"
 	"log"
 	"os"
@@ -23,7 +24,7 @@ func main() {
 	}
 
 	//	Get data from file
-	raw, err := getDataFromFile(from)
+	raw, err := file.Lines(from)
 	if err != nil {
 		errLogger.Fatalf(err.Error())
 	}
