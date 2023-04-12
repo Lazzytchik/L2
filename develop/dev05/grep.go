@@ -19,10 +19,9 @@ func main() {
 	elg := log.New(os.Stderr, "", log.Llongfile)
 
 	options := ParseFlags()
+	counter := 0
 
-	scanner := grep.NewScanner(options, ChooseMatcher(options), func(s string) {
-		log.Println(s)
-	})
+	scanner := grep.NewScanner(options, ChooseMatcher(options), ChoosePrinter(options, &counter))
 
 	file, err := os.Open(options.FileName)
 	if err != nil {
@@ -31,6 +30,9 @@ func main() {
 	defer file.Close()
 
 	scanner.Scan(file)
+
+	PrintCounter(options, counter)
+
 }
 
 func ParseFlags() grep.Options {
@@ -74,4 +76,32 @@ func ChooseMatcher(options grep.Options) grep.Matcher {
 	}
 
 	return grep.Have{}
+}
+
+func ChoosePrinter(options grep.Options, counter *int) func(line int, s string) {
+	if options.Count {
+		return MakeCounter(counter)
+	}
+
+	if options.LineNum {
+		return func(line int, s string) {
+			log.Printf("line %d: %s", line, s)
+		}
+	}
+
+	return func(line int, s string) {
+		log.Println(s)
+	}
+}
+
+func MakeCounter(counter *int) func(line int, s string) {
+	return func(line int, s string) {
+		*counter += 1
+	}
+}
+
+func PrintCounter(options grep.Options, counter int) {
+	if options.Count {
+		log.Println(counter)
+	}
 }
